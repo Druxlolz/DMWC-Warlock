@@ -223,16 +223,26 @@ function Warlock.Rotation()
             end
         end
         ShardCount = Shards(Setting("Max Shards"))
-        if Setting("Auto Target Quest Units") then
+        if Setting("Auto Target Quest Units") and Player.HP >= Setting("Auto Pull Min Health") and Player.PowerPct >= Setting("Auto Pull Min Mana") then
             if Player:AutoTargetQuest(30, true) then
                 return true
             end
         end
+        if Setting("Pull Anything") and Player.HP >= Setting("Auto Pull Min Health") and Player.PowerPct >= Setting("Auto Pull Min Mana") then
+		    if Player:AutoTargetAny(30, false) then 
+                return true
+            end
+        end	
         if Player.Combat and Setting("Auto Target") then
             if Player:AutoTarget(30, true) then
                 return true
             end
         end
+        if Player.Combat and Setting("Auto Face") then
+		    if FaceDirection("target") then
+		        return true
+			end
+		end
         if not Player.Combat then
             if Setting("Auto Buff") and DemonBuff() then
                 return true
