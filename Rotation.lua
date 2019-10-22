@@ -239,7 +239,7 @@ function Warlock.Rotation()
             end
         end
         if Player.Combat and not Player.Moving and Setting("Auto Face") then
-		    if FaceDirection("target") then
+		    if FaceDirection ("target", Update) then
 		        return true
 			end
 		end
