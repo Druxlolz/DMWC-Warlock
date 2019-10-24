@@ -238,11 +238,11 @@ function Warlock.Rotation()
                 return true
             end
         end
-        if Player.Combat and not Player.Moving and Setting("Auto Face") then
-		    if FaceDirection ("target", Update) then
-		        return true
-			end
-		end
+        if Player.Combat and not Player.Moving and Setting("Auto Face") and Target.ValidEnemy then
+           if FaceDirection ("target", Update) then
+		return true
+	    end
+	end
         if not Player.Combat then
             if Setting("Auto Buff") and DemonBuff() then
                 return true
