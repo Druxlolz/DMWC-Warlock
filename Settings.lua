@@ -69,7 +69,6 @@ function Warlock.Settings()
     UI.AddToggle("Stop DS At Max Shards", "Stop using Drain Soul when max shards reached", false)
     UI.AddToggle("Auto Delete Shards", "Activate automatic deletion of shards from bags, set max below", false)
     UI.AddRange("Max Shards", "Control max number of shards in bag", 0, 20, 1, 4)
-
     --
     DMW.Helpers.Rotation.CastingCheck = false
 end
