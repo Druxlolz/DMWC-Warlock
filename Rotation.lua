@@ -179,7 +179,7 @@ local function MultiDot()
             end
         end
     end
-    if Setting("Immolate") and Setting("Cycle Immolate") and not Player.Moving and Debuff.Immolate:Count() < Setting("Multidot Limit") then
+    if Setting("Immolate") and Setting("Cycle Immolate") and Target.Facing and not Player.Moving and Debuff.Immolate:Count() < Setting("Multidot Limit") then
         for _, Unit in ipairs(Enemy30Y) do
             if (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Unit.Pointer)) and Unit.CreatureType ~= "Totem" and Unit.Facing and not Debuff.Immolate:Exist(Unit) and Unit.TTD > 10 and Spell.Immolate:Cast(Unit) then
                 return true
@@ -201,10 +201,12 @@ local function Dot()
         end
     end
     if Setting("Corruption") and (not Player.Moving or Talent.ImprovedCorruption.Rank == 5) and (not Spell.Corruption:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Corruption.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and not Debuff.Corruption:Exist(Target) and Target.TTD > 7 and Spell.Corruption:Cast(Target) then
-        return true
+		return true
     end
-    if Setting("Immolate") and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and (Setting("Auto Face") or Target.Facing) and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
-        return true
+    if Setting("Immolate") and Target.Facing and not Player.Moving and (not Spell.Immolate:LastCast() or (DMW.Player.LastCast[1].SuccessTime and (DMW.Time - DMW.Player.LastCast[1].SuccessTime) > 0.7) or not UnitIsUnit(Spell.Immolate.LastBotTarget, Target.Pointer)) and Target.CreatureType ~= "Totem" and (Setting("Auto Face") or Target.Facing) and not Debuff.Immolate:Exist(Target) and Target.TTD > 10 and Spell.Immolate:Cast(Target) then
+		RunMacroText ("/script TurnLeftStart(GetTime()*1000 + 1);")
+        RunMacroText("/script TurnLeftStop(GetTime()*1000 + 10);")
+		return true
     end
 end
 
@@ -224,30 +226,30 @@ function Warlock.Rotation()
         end
         ShardCount = Shards(Setting("Max Shards"))
         if Setting("Auto Target Quest Units") and Player.HP >= Setting("Auto Pull Min Health") and Player.PowerPct >= Setting("Auto Pull Min Mana") then
-            if Player:AutoTargetQuest(30, true) then
+            if Player:AutoTargetQuest(35, true) then
                 return true
             end
         end
         if Setting("Pull Anything") and Player.HP >= Setting("Auto Pull Min Health") and Player.PowerPct >= Setting("Auto Pull Min Mana") then
-		    if Player:AutoTargetAny(30, false) then 
+		    if Player:AutoTargetAny(35, false) then 
                 return true
             end
         end	
         if Player.Combat and Setting("Auto Target") then
-            if Player:AutoTarget(30, true) then
+            if Player:AutoTarget(35, true) then
                 return true
             end
         end
         if Player.Combat and not Player.Moving and Setting("Auto Face") and Target.ValidEnemy then
-           if FaceDirection ("target", Update) then
-		return true
-	    end
-	end
+		    if FaceDirection ("Target", Update) then
+		       return true
+			end
+		end
         if not Player.Combat then
             if Setting("Auto Buff") and DemonBuff() then
                 return true
             end
-            if not Player.Moving and Setting("Create Healthstone") and CreateHealthstone() then
+            if not Player.Moving and not Player.Combat and Setting("Create Healthstone") and CreateHealthstone() then
                 return true
             end
             if not Player.Moving and Setting("Create Soulstone") and CreateSoulstone() then
@@ -284,7 +286,7 @@ function Warlock.Rotation()
         end
         if not Player.Moving and not Target.Player and Setting("Drain Soul Snipe") and (not Setting("Stop DS At Max Shards") or ShardCount < Setting("Max Shards")) and (not Player.Casting or (Player.Casting ~= Spell.DrainSoul.SpellName and Player.Casting ~= Spell.Hellfire.SpellName and Player.Casting ~= Spell.RainOfFire.SpellName)) and Spell.DrainSoul:CD() < 0.2 and Debuff.Shadowburn:Count() == 0 then
             for _, Unit in ipairs(Enemy30Y) do
-                if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 8) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
+                if Unit.Facing and not Unit.Player and (Unit.TTD < 3 or Unit.HP < 6) and not Unit:IsBoss() and not UnitIsTapDenied(Unit.Pointer) then
                     if Spell.DrainSoul:Cast(Unit) then
                         WandTime = DMW.Time
                         return true
@@ -348,7 +350,13 @@ function Warlock.Rotation()
                 return true
             end
             if DMW.Player.Equipment[18] and Target.Facing and Wand() then
-                return true
+			   if Setting("Auto face") then
+			    RunMacroText ("/script TurnLeftStart(GetTime()*1000 + 1);")
+                RunMacroText("/script TurnLeftStop(GetTime()*1000 + 10);")
+				return true
+				    else
+                    return true
+				end
             end
         end
     end
