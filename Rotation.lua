@@ -351,13 +351,11 @@ function Warlock.Rotation()
             end
             if DMW.Player.Equipment[18] and Target.Facing and Wand() then
 	       if Setting("Auto face") then
-			 RunMacroText ("/script TurnLeftStart(GetTime()*1000 + 1);")
-                         RunMacroText("/script TurnLeftStop(GetTime()*1000 + 10);")
-	           return true 
-		end
-		   else
-                   return true
-		end
+		  RunMacroText ("/script TurnLeftStart(GetTime()*1000 + 1);")
+                  RunMacroText("/script TurnLeftStop(GetTime()*1000 + 10);")
+			return true end 
+		  else
+			return true
             end
         end
     end
